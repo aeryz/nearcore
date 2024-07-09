@@ -210,7 +210,7 @@ impl ListenerAddr {
         let guard = tokio::net::TcpSocket::new_v6().unwrap();
         guard.set_reuseaddr(true).unwrap();
         guard.set_reuseport(true).unwrap();
-        guard.bind("[::1]:0".parse().unwrap()).unwrap();
+        guard.bind("127.0.0.1:0".parse().unwrap()).unwrap();
         let addr = guard.local_addr().unwrap();
         RESERVED_LISTENER_ADDRS.lock().unwrap().insert(addr, guard);
         Self(addr)
