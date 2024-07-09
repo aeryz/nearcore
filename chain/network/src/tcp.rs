@@ -4,6 +4,7 @@ use near_primitives::network::PeerId;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::fmt;
+use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 use std::sync::Mutex;
 
 const LISTENER_BACKLOG: u32 = 128;
@@ -182,10 +183,10 @@ impl ListenerAddr {
 
     /// TEST-ONLY: reserves a random port on localhost for a TCP listener.
     pub fn reserve_for_test() -> Self {
-        let guard = tokio::net::TcpSocket::new_v6().unwrap();
+        let guard = tokio::net::TcpSocket::new_v4().unwrap();
         guard.set_reuseaddr(true).unwrap();
         guard.set_reuseport(true).unwrap();
-        guard.bind("[::1]:0".parse().unwrap()).unwrap();
+        guard.bind(SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::new(0, 0, 0, 0), 0))).unwrap();
         let addr = guard.local_addr().unwrap();
         RESERVED_LISTENER_ADDRS.lock().unwrap().insert(addr, guard);
         Self(addr)
